@@ -1,0 +1,76 @@
+// Stellar AI ChainOracle - Prisma Schema
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Chat Conversations ───────────────────────────────────────────────────────
+
+model Conversation {
+  id        String    @id @default(cuid())
+  title     String    @default("New Conversation")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  messages  Message[]
+
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  role           MessageRole
+  content        String       @db.Text
+  metadata       Json?        // Stores blockchain query results, tool calls, etc.
+  createdAt      DateTime     @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@map("messages")
+}
+
+enum MessageRole {
+  user
+  assistant
+  system
+}
+
+// ─── Wallet Analysis Cache ────────────────────────────────────────────────────
+
+model WalletAnalysis {
+  id          String   @id @default(cuid())
+  address     String   @unique
+  network     String   @default("testnet")
+  summary     String   @db.Text
+  rawData     Json?
+  analyzedAt  DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([address])
+  @@map("wallet_analyses")
+}
+
+// ─── Query History ────────────────────────────────────────────────────────────
+
+model QueryLog {
+  id          String   @id @default(cuid())
+  prompt      String   @db.Text
+  queryType   String   // "account" | "transactions" | "trustlines" | "payments"
+  walletAddr  String?
+  network     String   @default("testnet")
+  success     Boolean  @default(true)
+  errorMsg    String?
+  durationMs  Int?
+  createdAt   DateTime @default(now())
+
+  @@index([walletAddr])
+  @@index([createdAt])
+  @@map("query_logs")
+}
