@@ -1,10 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    // Prepare for future Soroban/WASM support
-    serverComponentsExternalPackages: ["@stellar/stellar-sdk"],
-  },
+  // Stellar SDK uses Node.js-only modules — keep it server-side only
+  serverExternalPackages: ["@stellar/stellar-sdk"],
   images: {
     remotePatterns: [
       {
