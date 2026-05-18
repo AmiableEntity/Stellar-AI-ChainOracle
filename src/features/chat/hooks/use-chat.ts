@@ -2,7 +2,6 @@
 
 import { useCallback } from "react";
 import { useChatStore } from "@/store/chat";
-import { generateId } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 
 /**
@@ -35,7 +34,6 @@ export function useChat() {
       addMessage(convId, { role: "user", content });
 
       // Add placeholder assistant message
-      const assistantMsgId = generateId();
       addMessage(convId, { role: "assistant", content: "" });
 
       setStreaming(true);

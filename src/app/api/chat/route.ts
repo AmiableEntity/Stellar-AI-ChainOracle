@@ -8,7 +8,7 @@ export const maxDuration = 60;
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as ChatRequest;
-    const { message, walletAddress, network = "testnet", conversationId: _cid } = body;
+    const { message, walletAddress, network = "testnet" } = body;
 
     if (!message?.trim()) {
       return Response.json({ error: "Message is required" }, { status: 400 });
